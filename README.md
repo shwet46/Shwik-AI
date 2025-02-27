@@ -1,1 +1,1 @@
-# Shwik
+# Shwik-AI
