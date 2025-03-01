@@ -2,6 +2,10 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <h1 className="text-center">Hii</h1>
+    <>
+    <main className="min-h-screen bg-white antialiased">
+
+    </main>
+    </>
   );
 }
