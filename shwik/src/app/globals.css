@@ -1,4 +1,24 @@
 @import "tailwindcss";
+/* styles/globals.css */
+
+/* Self-hosting Fira Code font */
+@font-face {
+  font-family: 'Fira Code';
+  src: url('/fonts/FiraCode-Regular.woff2') format('woff2'),
+       url('/fonts/FiraCode-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Apply Fira Code font globally */
+* {
+  font-family: 'Fira Code', monospace;
+}
+
+body{
+  background-color: oklch(0.98 0.016 73.684);
+}
+
 
 @theme {
   --font-sans: var(--font-geist-sans);
