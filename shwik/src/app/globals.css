@@ -1,24 +1,23 @@
 @import "tailwindcss";
 /* styles/globals.css */
 
-/* Self-hosting Fira Code font */
+/* Self-hosting Indie Flower font */
 @font-face {
-  font-family: 'Fira Code';
-  src: url('/fonts/FiraCode-Regular.woff2') format('woff2'),
-       url('/fonts/FiraCode-Regular.woff') format('woff');
+  font-family: 'Indie Flower';
+  src: url('/fonts/IndieFlower-Regular.woff2') format('woff2'),
+       url('/fonts/IndieFlower-Regular.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }
 
-/* Apply Fira Code font globally */
+/* Apply Indie Flower font globally */
 * {
-  font-family: 'Fira Code', monospace;
+  font-family: 'Indie Flower', cursive;
 }
 
-body{
+body {
   background-color: oklch(0.98 0.016 73.684);
 }
-
 
 @theme {
   --font-sans: var(--font-geist-sans);
@@ -40,5 +39,4 @@ body{
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
 }
