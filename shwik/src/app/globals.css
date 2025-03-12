@@ -25,4 +25,17 @@ body {
   --font-mono: var(--font-geist-mono);
 }
 
+.hand-drawn-border {
+  font-family: 'Patrick Hand', cursive;
+  font-weight: bold;
+  background: transparent;
+  letter-spacing: 1px;
+  outline: none;
+  border: solid 6px black;
+  border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+  transition: all 0.2s ease;
+}
 
+.hand-drawn-border:hover {
+  border-color: black;
+}
