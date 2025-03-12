@@ -14,7 +14,7 @@ function Producthome() {
             Generate documents by providing a summary or topic description, whether about an event or a project.
             Customize preferences and obtain the document you need. Use the default template or share a custom one.
           </p>
-          <button className="mt-4 px-6 py-2 text-lg font-bold text-black bg-yellow-300 border-2 border-black shadow-md transform hover:scale-105 hover:rotate-1 transition duration-300 hand-drawn-border">
+          <button className="mt-4 px-6 py-2 text-xl font-bold text-black bg-yellow-300 border-2 border-black shadow-md transform hover:scale-105 hover:rotate-1 transition duration-300 hand-drawn-border">
             Try Now
           </button>
         </div>
@@ -25,7 +25,7 @@ function Producthome() {
             Summarize content effectively by inputting a description or topic. Filter preferences and get a concise summary.
             Use predefined templates or create your own for more customized results.
           </p>
-          <button className="mt-4 px-6 py-2 text-lg font-bold text-black bg-yellow-300 border-2 border-black shadow-md transform hover:scale-105 hover:rotate-1 transition duration-300 hand-drawn-border">
+          <button className="mt-4 px-6 py-2 text-xl font-bold text-black bg-yellow-300 border-2 border-black shadow-md transform hover:scale-105 hover:rotate-1 transition duration-300 hand-drawn-border">
             Try Now
           </button>
         </div>
