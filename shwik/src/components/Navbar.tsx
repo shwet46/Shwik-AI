@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import {
-  HoveredLink,
   Menu,
   MenuItem,
   HamburgerButton,
@@ -18,7 +17,7 @@ function Navbar({ className }: { className?: string }) {
   // State for mobile menu
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   // State to track viewport size
-  const [isMobile, setIsMobile] = useState(false);
+  const [, setIsMobile] = useState(false);
 
   // Check for mobile viewport on client side
   useEffect(() => {

@@ -1,9 +1,9 @@
 import React from 'react'
 
-export function Docgen() {
+function page() {
   return (
-    <div>Doc-gen</div>
+    <div>page</div>
   )
 }
 
-export default Docgen;
+export default page
