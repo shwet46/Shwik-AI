@@ -9,11 +9,20 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.0",
     "autoprefixer": "^10.4.20",
     "clsx": "^2.1.1",
+    "file-saver": "^2.0.5",
+    "jquery": "^3.7.1",
+    "jszip": "^3.10.1",
+    "lucide-react": "^0.487.0",
+    "mammoth": "^1.9.0",
     "motion": "^12.4.7",
     "next": "15.2.0",
+    "pdfjs-dist": "^5.1.91",
     "postcss": "^8.5.3",
+    "pptxgenjs": "^3.12.0",
+    "pptxjs": "^0.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.0.2"
@@ -21,7 +30,9 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/file-saver": "^2.0.7",
     "@types/node": "^20.17.22",
+    "@types/pdfjs-dist": "^2.10.377",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19",
     "eslint": "^9",
