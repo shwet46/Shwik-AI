@@ -1,5 +1,3 @@
-@import "tailwindcss";
-/* styles/globals.css */
 
 /* Self-hosting Indie Flower font */
 @font-face {
@@ -24,6 +22,10 @@ body {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 .hand-drawn-border {
   font-family: 'Patrick Hand', cursive;

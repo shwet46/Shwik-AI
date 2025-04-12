@@ -381,37 +381,37 @@ ${textToSummarize}`;
       {/* Model Version Selector */}
       <ModelSelector />
 
-      {/* Bottom Bar */}
-      <div className="flex items-center justify-between w-full mb-4">
-        <button
-          onClick={handleGenerate}
-          disabled={isLoading || (activeTab === "text" ? !content : !fileContent)}
-          className={`px-6 py-3 flex items-center gap-2 text-white rounded-full font-medium border-2 shadow-lg transition-transform ${
-            isLoading || (activeTab === "text" ? !content : !fileContent)
-              ? "bg-gray-400 border-gray-500 cursor-not-allowed"
-              : "bg-purple-800 border-purple-900 hover:bg-purple-900 hover:scale-105"
-          }`}
-        >
-          {isLoading && summary === "" ? (
-            <>
-              <Loader2 className="animate-spin" size={20} />
-              Generating...
-            </>
-          ) : (
-            <>
-              <FileText size={20} />
-              Generate Summary
-            </>
-          )}
-        </button>
-        <div className="text-gray-500 text-sm">
-          {activeTab === "text"
-            ? `${content.length} / ${MAX_CHARACTERS} characters`
-            : fileContent
-            ? `${fileContent.length} / ${MAX_CHARACTERS} characters`
-            : ""}
-        </div>
-      </div>
+   {/* Bottom Bar */}
+<div className="flex flex-col md:flex-row items-center justify-between w-full gap-4 mb-4">
+  <button
+    onClick={handleGenerate}
+    disabled={isLoading || (activeTab === "text" ? !content : !fileContent)}
+    className={`w-full md:w-auto px-6 py-3 flex items-center justify-center gap-2 text-white rounded-full font-medium border-2 shadow-lg transition-transform ${
+      isLoading || (activeTab === "text" ? !content : !fileContent)
+        ? "bg-gray-400 border-gray-500 cursor-not-allowed"
+        : "bg-purple-800 border-purple-900 hover:bg-purple-900 hover:scale-105"
+    }`}
+  >
+    {isLoading && summary === "" ? (
+      <>
+        <Loader2 className="animate-spin" size={20} />
+        Generating...
+      </>
+    ) : (
+      <>
+        <FileText size={20} />
+        Generate Summary
+      </>
+    )}
+  </button>
+  <div className="text-gray-500 text-sm text-center md:text-right w-full md:w-auto">
+    {activeTab === "text"
+      ? `${content.length} / ${MAX_CHARACTERS} characters`
+      : fileContent
+      ? `${fileContent.length} / ${MAX_CHARACTERS} characters`
+      : ""}
+  </div>
+</div>
 
       {/* Summary Display */}
       {summary && (
