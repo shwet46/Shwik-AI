@@ -12,8 +12,8 @@ import Link from "next/link";
 import { AnimatePresence } from "framer-motion";
 
 function Navbar({ className }: { className?: string }) {
-  // Set "Home" as the default active tab
-  const [active, setActive] = useState<string | null>("Home");
+  // Remove default active tab
+  const [active, setActive] = useState<string | null>(null);
   // State for mobile menu
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   // State to track viewport size
@@ -24,13 +24,13 @@ function Navbar({ className }: { className?: string }) {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768); // Standard md breakpoint
     };
-    
+
     // Check on initial render
     checkMobile();
-    
+
     // Add resize listener
     window.addEventListener("resize", checkMobile);
-    
+
     // Cleanup
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
@@ -44,7 +44,7 @@ function Navbar({ className }: { className?: string }) {
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
   };
-  
+
   return (
     <div
       className={cn(
@@ -56,7 +56,7 @@ function Navbar({ className }: { className?: string }) {
       <div className="relative flex justify-between items-center px-4 py-2 md:py-0 mx-auto max-w-full md:w-full md:max-w-none">
         {/* Brand/Logo - visible on both mobile and desktop */}
         <div className="text-pink-900 text-lg md:hidden">{"<SB/>"}</div>
-        
+
         {/* Hamburger menu - visible only on mobile */}
         <div className="md:hidden">
           <HamburgerButton 
@@ -70,6 +70,9 @@ function Navbar({ className }: { className?: string }) {
           <Menu setActive={setActive}>
             <Link href={"/"}>
               <MenuItem setActive={setActive} active={active} item="Home" />
+            </Link>
+            <Link href={"/poster"}>
+              <MenuItem setActive={setActive} active={active} item="Poster" />
             </Link>
             <Link href={"/doc-gen"}>
               <MenuItem setActive={setActive} active={active} item="Doc-Gen" />

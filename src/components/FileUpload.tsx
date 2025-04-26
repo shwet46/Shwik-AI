@@ -2,11 +2,12 @@
 import { useState, useRef, useEffect } from "react";
 import { Upload, FileText, Copy, Download, Loader2 } from "lucide-react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import * as pdfjs from 'pdfjs-dist';
-import mammoth from 'mammoth';
-import { saveAs } from 'file-saver';
+import * as pdfjs from "pdfjs-dist";
+import mammoth from "mammoth";
+import { saveAs } from "file-saver";
+import JSZip from "jszip";
 
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 }
 
@@ -22,14 +23,14 @@ interface PdfTextItem {
 
 type ErrorWithMessage = {
   message: string;
-}
+};
 
 function isErrorWithMessage(error: unknown): error is ErrorWithMessage {
   return (
-    typeof error === 'object' &&
+    typeof error === "object" &&
     error !== null &&
-    'message' in error &&
-    typeof (error as Record<string, unknown>).message === 'string'
+    "message" in error &&
+    typeof (error as Record<string, unknown>).message === "string"
   );
 }
 
@@ -46,7 +47,7 @@ export default function FileUpload() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
 
-  const MAX_CHARACTERS = 25000; 
+  const MAX_CHARACTERS = 25000;
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
     const newContent = e.target.value;
@@ -95,34 +96,41 @@ export default function FileUpload() {
     try {
       setIsLoading(true);
       let extractedText = "";
-   
-      if (file.type.includes('text/plain')) {
 
+      if (file.type.includes("text/plain")) {
         extractedText = await file.text();
-      } else if (file.type.includes('application/pdf')) {
-
+      } else if (file.type.includes("application/pdf")) {
         extractedText = await extractPdfText(file);
-      } else if (file.type.includes('application/vnd.openxmlformats-officedocument.wordprocessingml.document')) {
-
+      } else if (
+        file.type.includes(
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        )
+      ) {
         extractedText = await extractDocxText(file);
-      } else if (file.type.includes('application/vnd.ms-powerpoint') || 
-                file.type.includes('application/vnd.openxmlformats-officedocument.presentationml.presentation')) {
-
-        extractedText = `[PowerPoint content from ${file.name}]`;
-        setError("PowerPoint processing is limited. Results may vary.");
+      } else if (
+        file.type.includes("application/vnd.ms-powerpoint") ||
+        file.type.includes(
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        )
+      ) {
+        extractedText = await extractPptxText(file);
       } else {
         throw new Error("Unsupported file type");
       }
-      
+
       if (extractedText.length > MAX_CHARACTERS) {
         extractedText = extractedText.slice(0, MAX_CHARACTERS);
-        setError(`File content truncated to ${MAX_CHARACTERS} characters due to length limitations.`);
+        setError(
+          `File content truncated to ${MAX_CHARACTERS} characters due to length limitations.`
+        );
       }
-      
+
       setFileContent(extractedText);
     } catch (error: unknown) {
       console.error("Error processing file:", error);
-      const errorMessage = isErrorWithMessage(error) ? error.message : "Unknown error";
+      const errorMessage = isErrorWithMessage(error)
+        ? error.message
+        : "Unknown error";
       setError(`Failed to process file: ${errorMessage}`);
       setFileContent("");
     } finally {
@@ -134,35 +142,35 @@ export default function FileUpload() {
     try {
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
-      
+
       let fullText = "";
       const pageLimit = Math.min(pdf.numPages, 50);
-      
+
       for (let i = 1; i <= pageLimit; i++) {
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
         const pageText = textContent.items
-          .filter((item): item is PdfTextItem => 
-            typeof item === 'object' &&
+          .filter((item): item is PdfTextItem =>
+            typeof item === "object" &&
             item !== null &&
-            'str' in item &&
-            typeof item.str === 'string'
+            "str" in item &&
+            typeof item.str === "string"
           )
-          .map(item => item.str)
+          .map((item) => item.str)
           .join(" ");
-        
+
         fullText += pageText + "\n";
-        
+
         if (fullText.length > MAX_CHARACTERS) {
           fullText = fullText.slice(0, MAX_CHARACTERS);
           break;
         }
       }
-      
+
       if (pdf.numPages > 50) {
         fullText += "\n[Document truncated due to length...]";
       }
-      
+
       return fullText;
     } catch (error: unknown) {
       console.error("PDF extraction error:", error);
@@ -181,6 +189,29 @@ export default function FileUpload() {
     }
   };
 
+  const extractPptxText = async (file: File): Promise<string> => {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const zip = await JSZip.loadAsync(arrayBuffer);
+      let text = "";
+
+      for (const fileName of Object.keys(zip.files)) {
+        if (fileName.startsWith("ppt/slides/slide") && fileName.endsWith(".xml")) {
+          const slideContent = await zip.files[fileName].async("text");
+          const matches = slideContent.match(/<a:t>(.*?)<\/a:t>/g);
+          if (matches) {
+            text += matches.map((match) => match.replace(/<\/?a:t>/g, "")).join(" ");
+          }
+        }
+      }
+
+      return text || "[No readable content found in PowerPoint file]";
+    } catch (error) {
+      console.error("PPTX extraction error:", error);
+      throw new Error("Could not extract text from PowerPoint file");
+    }
+  };
+
   const triggerFileInput = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -192,14 +223,14 @@ export default function FileUpload() {
     setSummary("");
 
     const textToSummarize = activeTab === "text" ? content : fileContent;
-    
+
     if (!textToSummarize.trim()) {
       setError("Please enter some text or upload a document.");
       return;
     }
 
     setIsLoading(true);
-    
+
     try {
       const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
       if (!apiKey) {
@@ -208,24 +239,24 @@ export default function FileUpload() {
 
       const genAI = new GoogleGenerativeAI(apiKey);
 
-      const modelName = "gemini-1.5-pro"; 
-      
+      const modelName = "gemini-1.5-pro";
+
       const model = genAI.getGenerativeModel({ model: modelName });
-      
+
       const prompt = `Please provide a concise and comprehensive summary of the following ${activeTab === "text" ? "text" : "document"}. 
 Focus on the main points, key ideas, and essential information:
 
 ${textToSummarize}`;
- 
+
       const result = await model.generateContent(prompt);
       const generatedText = result.response.text();
-      
+
       setSummary(generatedText);
     } catch (error: unknown) {
       console.error("Error generating summary:", error);
       const errorMessage = isErrorWithMessage(error) ? error.message : "Unknown error";
       setError(`Failed to generate summary: ${errorMessage}`);
-      
+
       if (!process.env.NEXT_PUBLIC_GEMINI_API_KEY) {
         setSummary("API Key missing...");
       }
@@ -245,39 +276,21 @@ ${textToSummarize}`;
   const handleDownload = () => {
     if (summary) {
       const blob = new Blob([summary], { type: "text/plain" });
-      const filename = activeTab === "text" 
-        ? `text-summary-${new Date().toISOString().slice(0, 10)}.txt`
-        : `summary-${fileName.split('.')[0]}-${new Date().toISOString().slice(0, 10)}.txt`;
-      
+      const filename =
+        activeTab === "text"
+          ? `text-summary-${new Date().toISOString().slice(0, 10)}.txt`
+          : `summary-${fileName.split(".")[0]}-${new Date().toISOString().slice(0, 10)}.txt`;
+
       saveAs(blob, filename);
     }
   };
-
 
   useEffect(() => {
     setSummary("");
   }, [activeTab]);
 
-  const ModelSelector = () => (
-    <div className="mb-4">
-      <select
-        className="block w-full p-2 border border-gray-300 rounded-md bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        onChange={() => {
-          setError("");
-          setSummary("");
-        }}
-        defaultValue="gemini-pro"
-      >
-        <option value="gemini-pro">Gemini Pro</option>
-        <option value="gemini-pro-vision">Gemini Pro Vision</option>
-      </select>
-      <p className="text-xs text-gray-500 mt-1">Select model version</p>
-    </div>
-  );
-
   return (
     <div className="w-full items-center max-w-4xl mx-auto p-4">
-      
       {/* Tabs */}
       <div className="mb-4 flex rounded-full items-center bg-sky-100 p-1 w-full max-w-md mx-auto">
         <button
@@ -346,18 +359,14 @@ ${textToSummarize}`;
             ) : (
               <>
                 <Upload size={48} className="text-gray-400 mb-2" />
-                <p className="text-sm text-gray-600 mb-2">
-                  Drag & drop your document here
-                </p>
+                <p className="text-sm text-gray-600 mb-2">Drag & drop your document here</p>
                 <button
                   className="px-4 py-2 bg-cyan-600 text-white rounded-md hover:bg-cyan-700 transition-colors"
                   onClick={triggerFileInput}
                 >
                   Upload File
                 </button>
-                <p className="text-xs text-gray-500 mt-2">
-                  Supports .txt, .pdf, .docx, .ppt, .pptx
-                </p>
+                <p className="text-xs text-gray-500 mt-2">Supports .txt, .pdf, .docx, .ppt, .pptx</p>
               </>
             )}
           </div>
@@ -365,53 +374,39 @@ ${textToSummarize}`;
       </div>
 
       {/* Error message */}
-      {error && (
-        <div className="text-red-500 text-sm mb-4 px-2">
-          {error}
+      {error && <div className="text-red-500 text-sm mb-4 px-2">{error}</div>}
+
+      {/* Bottom Bar */}
+      <div className="flex flex-col md:flex-row items-center justify-between w-full gap-4 mb-4">
+        <button
+          onClick={handleGenerate}
+          disabled={isLoading || (activeTab === "text" ? !content : !fileContent)}
+          className={`w-full md:w-auto px-6 py-3 flex items-center justify-center gap-2 text-white rounded-full font-medium border-2 shadow-lg transition-transform ${
+            isLoading || (activeTab === "text" ? !content : !fileContent)
+              ? "bg-gray-400 border-gray-500 cursor-not-allowed"
+              : "bg-purple-800 border-purple-900 hover:bg-purple-900 hover:scale-105"
+          }`}
+        >
+          {isLoading && summary === "" ? (
+            <>
+              <Loader2 className="animate-spin" size={20} />
+              Generating...
+            </>
+          ) : (
+            <>
+              <FileText size={20} />
+              Generate Summary
+            </>
+          )}
+        </button>
+        <div className="text-gray-500 text-sm text-center md:text-right w-full md:w-auto">
+          {activeTab === "text"
+            ? `${content.length} / ${MAX_CHARACTERS} characters`
+            : fileContent
+            ? `${fileContent.length} / ${MAX_CHARACTERS} characters`
+            : ""}
         </div>
-      )}
-
-      {/* API Key Status - for development environments */}
-      {process.env.NODE_ENV === 'development' && !process.env.NEXT_PUBLIC_GEMINI_API_KEY && (
-        <div className="bg-yellow-100 text-yellow-800 text-sm p-2 mb-4 rounded">
-          ⚠️ API Key Missing: Add NEXT_PUBLIC_GEMINI_API_KEY to your .env.local file
-        </div>
-      )}
-
-      {/* Model Version Selector */}
-      <ModelSelector />
-
-   {/* Bottom Bar */}
-<div className="flex flex-col md:flex-row items-center justify-between w-full gap-4 mb-4">
-  <button
-    onClick={handleGenerate}
-    disabled={isLoading || (activeTab === "text" ? !content : !fileContent)}
-    className={`w-full md:w-auto px-6 py-3 flex items-center justify-center gap-2 text-white rounded-full font-medium border-2 shadow-lg transition-transform ${
-      isLoading || (activeTab === "text" ? !content : !fileContent)
-        ? "bg-gray-400 border-gray-500 cursor-not-allowed"
-        : "bg-purple-800 border-purple-900 hover:bg-purple-900 hover:scale-105"
-    }`}
-  >
-    {isLoading && summary === "" ? (
-      <>
-        <Loader2 className="animate-spin" size={20} />
-        Generating...
-      </>
-    ) : (
-      <>
-        <FileText size={20} />
-        Generate Summary
-      </>
-    )}
-  </button>
-  <div className="text-gray-500 text-sm text-center md:text-right w-full md:w-auto">
-    {activeTab === "text"
-      ? `${content.length} / ${MAX_CHARACTERS} characters`
-      : fileContent
-      ? `${fileContent.length} / ${MAX_CHARACTERS} characters`
-      : ""}
-  </div>
-</div>
+      </div>
 
       {/* Summary Display */}
       {summary && (
