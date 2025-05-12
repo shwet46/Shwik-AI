@@ -1,6 +1,6 @@
 # 📝 Shwik: Professional Document Helper
 
-Shwik-AI is a professional document assistant that leverages AI to help you solve your document issues with ease. It offers two main features: **Document Generation** and **Document Summarizer**. With a modern UI and support for DOCX/PDF, Shwik-AI streamlines your workflow for creating, editing, and summarizing documents.
+Shwik is a professional document assistant that leverages AI to help you solve your document issues with ease. It offers two main features: **Document Generation** and **Document Summarizer**. With a modern UI and support for DOCX/PDF, Shwik streamlines your workflow for creating, editing, and summarizing documents.
 
 ---
 
@@ -21,8 +21,8 @@ Shwik-AI is a professional document assistant that leverages AI to help you solv
 
 1. **Clone the repository:**
    ```sh
-   git clone https://github.com/yourusername/shwik-ai.git
-   cd shwik-ai
+   git clone https://github.com/shwet46/Shwik-AI.git
+   cd Shwik-AI
    ```
 
 2. **Install dependencies:**
