@@ -1,7 +1,5 @@
 'use client';
 
-import PosterGenerator from "@/components/PosterGenerator";
-
 export default function page() {
   return (
     <main className="min-h-screen antialiased flex flex-col items-center justify-center px-4 py-10 sm:px-6 lg:px-8">

@@ -13,7 +13,6 @@ import { AnimatePresence } from "framer-motion";
 
 const menuItems = [
   { name: "Home", href: "/" },
-  { name: "Poster", href: "/poster" },
   { name: "Doc-Gen", href: "/doc-gen" },
   { name: "Summarizer", href: "/summary" },
 ];
