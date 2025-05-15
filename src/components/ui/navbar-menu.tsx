@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import Link, { LinkProps } from "next/link";
+import Link from "next/link";
 import Image from "next/image";
 
 const transition = {
@@ -36,8 +36,8 @@ export const MenuItem = ({
     >
       <motion.p
         transition={{ duration: 0.3 }}
-        className={`cursor-pointer px-4 py-2 ${
-          isActive ? "bg-cyan-600/50 text-black" : "text-black hover:opacity-[0.9]"
+        className={`cursor-pointer text-sm font-medium px-4 py-3 rounded-md ${
+          isActive ? "bg-cyan-600/50 text-white" : "text-black hover:bg-gray-100"
         }`}
       >
         {item}
@@ -49,11 +49,11 @@ export const MenuItem = ({
           transition={transition}
         >
           {isActive && children && (
-            <div className="absolute top-[calc(100%_+_1.7rem)] left-1/2 transform -translate-x-1/2">
+            <div className="absolute top-[calc(100%_+_0.5rem)] left-1/2 transform -translate-x-1/2 z-50">
               <motion.div
                 transition={transition}
                 layoutId="active"
-                className="bg-white backdrop-blur-sm rounded-md overflow-hidden border border-black/[0.2] shadow-xl"
+                className="bg-white backdrop-blur-sm rounded-md overflow-hidden border border-gray-200 shadow-lg"
               >
                 <motion.div layout className="w-max h-full p-4">
                   {children}
@@ -77,35 +77,34 @@ export const Menu = ({
   return (
     <nav
       onMouseLeave={() => setActive(null)}
-      className="relative rounded-md border border-transparent text-black shadow-input flex justify-center space-x-4 px-8 py-2"
+      className="relative rounded-md text-black flex justify-center items-center space-x-2 px-4 py-1"
     >
       {children}
     </nav>
   );
 };
 
-// New component for mobile menu
+// Updated MobileMenu component with correct props
 export const MobileMenu = ({
   isOpen,
+  onClose,
   children,
 }: {
-  setActive: (item: string | null) => void;
-  active: string | null;
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
 }) => {
-  if (!isOpen) return null;
-  
   return (
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.2 }}
-      className="absolute top-14 left-0 right-0 bg-white rounded-md shadow-xl border border-black/[0.1] py-2 mx-4"
+      className="absolute top-16 left-0 right-0 bg-white rounded-b-md shadow-xl border-b border-x border-gray-200 py-2 z-50"
     >
-      {children}
+      <div className="flex flex-col">
+        {children}
+      </div>
     </motion.div>
   );
 };
@@ -126,15 +125,15 @@ export const MobileMenuItem = ({
   
   return (
     <div
-      className={`px-4 py-3 ${
-        isActive ? "bg-cyan-600/50" : "hover:bg-gray-100"
+      className={`px-6 py-3 ${
+        isActive ? "bg-cyan-600/50 text-white" : "hover:bg-gray-100"
       }`}
       onClick={() => {
         setActive(item);
         if (onClick) onClick();
       }}
     >
-      <p className="text-black">{item}</p>
+      <p className={`text-sm font-medium ${isActive ? "text-white" : "text-black"}`}>{item}</p>
     </div>
   );
 };
@@ -151,17 +150,17 @@ export const ProductItem = ({
   src: string;
 }) => {
   return (
-    <Link href={href} className="flex space-x-2">
+    <Link href={href} className="flex space-x-3 hover:bg-gray-50 p-2 rounded-md transition-colors">
       <Image
         src={src}
         width={140}
         height={70}
         alt={title}
-        className="flex-shrink-0 shadow-2xl"
+        className="flex-shrink-0 rounded-md shadow-md object-cover"
       />
       <div>
-        <h4 className="text-2xl font-bold mb-1 text-black">{title}</h4>
-        <p className="text-black text-sm max-w-[10rem]">{description}</p>
+        <h4 className="text-lg font-bold mb-1 text-black">{title}</h4>
+        <p className="text-gray-600 text-sm max-w-[10rem]">{description}</p>
       </div>
     </Link>
   );
@@ -169,10 +168,21 @@ export const ProductItem = ({
 
 export const HoveredLink = ({
   children,
+  href,
+  className,
   ...rest
-}: LinkProps & { children: React.ReactNode }) => {
+}: {
+  children: React.ReactNode;
+  href: string;
+  className?: string;
+  [key: string]: any;
+}) => {
   return (
-    <Link {...rest} className="text-black hover:text-black">
+    <Link 
+      href={href} 
+      className={`text-black hover:text-cyan-600 transition-colors ${className || ""}`}
+      {...rest}
+    >
       {children}
     </Link>
   );
@@ -189,13 +199,13 @@ export const HamburgerButton = ({
   return (
     <button
       onClick={onClick}
-      className="block md:hidden focus:outline-none"
+      className="block focus:outline-none p-2"
       aria-label={isOpen ? "Close menu" : "Open menu"}
     >
-      <div className="w-6 flex flex-col gap-1">
-        <span className={`block h-0.5 w-full bg-black transition-transform duration-300 ${isOpen ? 'rotate-45 translate-y-1.5' : ''}`}></span>
+      <div className="w-6 flex flex-col gap-1.5">
+        <span className={`block h-0.5 w-full bg-black transition-transform duration-300 ${isOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
         <span className={`block h-0.5 w-full bg-black transition-opacity duration-300 ${isOpen ? 'opacity-0' : 'opacity-100'}`}></span>
-        <span className={`block h-0.5 w-full bg-black transition-transform duration-300 ${isOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></span>
+        <span className={`block h-0.5 w-full bg-black transition-transform duration-300 ${isOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
       </div>
     </button>
   );

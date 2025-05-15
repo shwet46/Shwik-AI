@@ -6,9 +6,11 @@ import {
   HamburgerButton,
   MobileMenu,
   MobileMenuItem,
+  HoveredLink
 } from "./ui/navbar-menu";
 import { cn } from "@/utils/utils";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 
 const menuItems = [
@@ -18,10 +20,40 @@ const menuItems = [
 ];
 
 function Navbar({ className }: { className?: string }) {
+  const pathname = usePathname();
   const [active, setActive] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Toggle mobile menu
+  useEffect(() => {
+    const currentItem = menuItems.find(item => 
+      item.href === pathname || 
+      (pathname && pathname !== "/" && item.href !== "/" && pathname.startsWith(item.href))
+    );
+    
+    if (currentItem) {
+      setActive(currentItem.name);
+    } else {
+      setActive(null);
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768 && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen((prev) => !prev);
   };
@@ -31,60 +63,67 @@ function Navbar({ className }: { className?: string }) {
   };
 
   return (
-    <div
+    <header
       className={cn(
-        "fixed top-0 inset-x-0 font-bold z-50 bg-white shadow-sm",
+        "fixed top-0 inset-x-0 z-50 bg-white shadow-md",
         className
       )}
     >
-      <div className="relative flex justify-between items-center px-4 py-2 md:py-0 mx-auto max-w-full md:w-full md:max-w-none">
-        {/* Logo */}
-        <div className="text-pink-900 text-lg md:hidden">{"<SB/>"}</div>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <div className="flex-shrink-0 flex items-center">
+            <Link href="/" className="text-xl font-bold text-cyan-600">
+              {"<SB/>"}
+            </Link>
+          </div>
 
-        {/* Hamburger menu - mobile only */}
-        <div className="md:hidden">
-          <HamburgerButton
-            isOpen={isMobileMenuOpen}
-            onClick={toggleMobileMenu}
-            aria-controls="mobile-menu"
-            aria-expanded={isMobileMenuOpen}
-            aria-label="Toggle navigation menu"
-          />
-        </div>
+          {/* Desktop Menu */}
+          <div className="hidden md:block">
+            <Menu setActive={setActive}>
+              {menuItems.map(({ name, href }) => (
+                <Link key={name} href={href} className="no-underline">
+                  <MenuItem 
+                    item={name} 
+                    active={active} 
+                    setActive={setActive} 
+                  />
+                </Link>
+              ))}
+            </Menu>
+          </div>
 
-        {/* Desktop Menu */}
-        <div className="hidden md:block w-full max-w-6xl mx-auto">
-          <Menu setActive={setActive}>
-            {menuItems.map(({ name, href }) => (
-              <Link key={name} href={href}>
-                <MenuItem item={name} active={active} setActive={setActive} />
-              </Link>
-            ))}
-          </Menu>
+          {/* Hamburger menu - mobile only */}
+          <div className="md:hidden">
+            <HamburgerButton
+              isOpen={isMobileMenuOpen}
+              onClick={toggleMobileMenu}
+            />
+          </div>
         </div>
       </div>
 
       {/* Mobile Menu */}
       <AnimatePresence>
-        <MobileMenu
-          isOpen={isMobileMenuOpen}
-          onClose={closeMobileMenu}
-          setActive={setActive}
-          active={active}
-        >
-          {menuItems.map(({ name, href }) => (
-            <Link key={name} href={href}>
-              <MobileMenuItem
-                item={name}
-                active={active}
-                setActive={setActive}
-                onClick={closeMobileMenu}
-              />
-            </Link>
-          ))}
-        </MobileMenu>
+        {isMobileMenuOpen && (
+          <MobileMenu
+            isOpen={isMobileMenuOpen}
+            onClose={closeMobileMenu}
+          >
+            {menuItems.map(({ name, href }) => (
+              <Link key={name} href={href} className="no-underline">
+                <MobileMenuItem
+                  item={name}
+                  active={active}
+                  setActive={setActive}
+                  onClick={closeMobileMenu}
+                />
+              </Link>
+            ))}
+          </MobileMenu>
+        )}
       </AnimatePresence>
-    </div>
+    </header>
   );
 }
 

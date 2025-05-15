@@ -30,8 +30,17 @@ Shwik is a professional document assistant that leverages AI to help you solve y
    npm install
    ```
 
-3. **Configure environment variables:**
-   - Copy `.env.local.example` to `.env.local` and add your API keys.
+3. **Set up environment variables:**
+   - Copy the example environment file:
+     ```sh
+     cp .env.local.example .env.local
+     ```
+   - Open `.env.local` and add your API keys.  
+     Example:
+     ```env
+     NEXT_PUBLIC_GEMINI_API_KEY="your_gemini_api_key"
+     HUGGINGFACE_API_KEY="your_huggingface_api_key"
+     ```
 
 4. **Run the development server:**
    ```sh
@@ -67,8 +76,6 @@ Contributions are welcome! Please open issues or submit pull requests for improv
 
 This project is licensed under the [MIT License](LICENSE).
 
-
 Made with ❤️ by Shweta
 
 ---
-

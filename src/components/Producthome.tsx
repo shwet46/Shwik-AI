@@ -12,7 +12,7 @@ function Producthome() {
           <h1 className="text-2xl sm:text-3xl font-bold text-rose-900">Document Generation</h1>
           <p className="text-lg sm:text-xl mt-4">
             Generate documents by providing a summary or topic description, whether about an event or a project.
-            Customize preferences and obtain the document you need. Use the default template or share a custom one.
+            AI will generate the document for you, you can edit the document with editor according to your needs.
           </p>
           <button className="mt-4 px-6 py-2 text-xl font-bold text-black bg-yellow-300 border-2 border-black shadow-md transform hover:scale-105 hover:rotate-1 transition duration-300 hand-drawn-border">
             Try Now
